@@ -1,9 +1,14 @@
-package rest_api
+package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
+
+// Example SSE server in Golang.
+//     $ go run sse.go
 
 type Broker struct {
 
@@ -35,7 +40,8 @@ func NewServer() (broker *Broker) {
 	return
 }
 
-func (broker *Broker) ServeHTTP(rw http.ResponseWriter, req *http.Request) (flusher http.Flusher, messageChan chan []byte) {
+func (broker *Broker) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+
 	// Make sure that the writer supports flushing.
 	//
 	flusher, ok := rw.(http.Flusher)
@@ -51,12 +57,13 @@ func (broker *Broker) ServeHTTP(rw http.ResponseWriter, req *http.Request) (flus
 	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// Each connection registers its own message channel with the Broker's connections registry
-	messageChan = make(chan []byte)
+	messageChan := make(chan []byte)
 
 	// Signal the broker that we have a new connection
 	broker.newClients <- messageChan
 
-	// Remove this client from the map of connected clients when this handler exits.
+	// Remove this client from the map of connected clients
+	// when this handler exits.
 	defer func() {
 		broker.closingClients <- messageChan
 	}()
@@ -68,14 +75,16 @@ func (broker *Broker) ServeHTTP(rw http.ResponseWriter, req *http.Request) (flus
 		<-notify
 		broker.closingClients <- messageChan
 	}()
-	return flusher, messageChan
-	/*for {
-		// Write to the ResponseWriter, Server Sent Events compatible
+
+	for {
+
+		// Write to the ResponseWriter
+		// Server Sent Events compatible
 		fmt.Fprintf(rw, "data: %s\n\n", <-messageChan)
 
-		// Flush the data immediately instead of buffering it for later.
+		// Flush the data immediatly instead of buffering it for later.
 		flusher.Flush()
-	}*/
+	}
 
 }
 
@@ -84,22 +93,41 @@ func (broker *Broker) listen() {
 		select {
 		case s := <-broker.newClients:
 
-		// A new client has connected. Register their message channel
+		// A new client has connected.
+		// Register their message channel
 			broker.clients[s] = true
 			log.Printf("Client added. %d registered clients", len(broker.clients))
 		case s := <-broker.closingClients:
 
-		// A client has detached and we want to stop sending them messages.
+		// A client has dettached and we want to
+		// stop sending them messages.
 			delete(broker.clients, s)
 			log.Printf("Removed client. %d registered clients", len(broker.clients))
 		case event := <-broker.Notifier:
 
-		// We got a new event from the outside! Send event to all connected clients
-		//
-			for clientMessageChan := range broker.clients {
+		// We got a new event from the outside!
+		// Send event to all connected clients
+			for clientMessageChan, _ := range broker.clients {
 				clientMessageChan <- event
 			}
 		}
 	}
+
+}
+
+func main() {
+
+	broker := NewServer()
+
+	go func() {
+		for {
+			time.Sleep(time.Second * 2)
+			eventString := fmt.Sprintf("the time is %v", time.Now())
+			log.Println("Receiving event")
+			broker.Notifier <- []byte(eventString)
+		}
+	}()
+
+	log.Fatal("HTTP server error: ", http.ListenAndServe("localhost:3000", broker))
 
 }

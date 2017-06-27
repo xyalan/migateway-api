@@ -18,7 +18,7 @@ func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params)  {
 
 func Sse(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	broker := NewServer()
-	broker.ServeHTTP(w, r)
+	flusher, messageChan := broker.ServeHTTP(w, r)
 	go func() {
 		for {
 			time.Sleep(time.Second)
@@ -27,4 +27,10 @@ func Sse(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 			broker.Notifier <- []byte(eventString)
 		}
 	}()
+
+	for {
+		log.Println("fffff")
+		fmt.Fprintf(w, "data: %s\n\n", <-messageChan)
+		flusher.Flush()
+	}
 }
