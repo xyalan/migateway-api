@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/xyalan/migateway-api"
-	"time"
 )
 
 func main() {
@@ -12,5 +11,6 @@ func main() {
 	}
 
 	//do something...
-	time.Sleep(10 * time.Second)
+	//time.Sleep(10 * time.Second)
+	select {}
 }
