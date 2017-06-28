@@ -18,3 +18,6 @@
 # JetBrains IntelliJ IDEA
 .idea/
 *.iml
+
+# vim
+*.swp
