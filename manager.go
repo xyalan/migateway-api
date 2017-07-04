@@ -1,9 +1,10 @@
-package migateway_api
+package migateway
 
 import (
-	"github.com/bingbaba/util/logs"
-	"time"
 	"errors"
+	"time"
+
+	"github.com/bingbaba/util/logs"
 )
 
 var (
@@ -14,8 +15,8 @@ var (
 type MIHomeManager struct {
 	reportChan chan *Device
 
-	GateWay   *GateWay
-	Motions   map[string]*Motion
+	GateWay *GateWay
+	Motions map[string]*Motion
 
 	DiscoveryTime    int64
 	FreshDevListTime int64

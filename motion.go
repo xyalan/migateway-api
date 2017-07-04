@@ -1,4 +1,4 @@
-package migateway_api
+package migateway
 
 import (
 	"time"

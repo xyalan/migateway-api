@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	_, err := migateway_api.NewMiHomeManager(nil)
+	_, err := migateway.NewMiHomeManager(nil)
 	if err != nil {
 		panic(err)
 	}

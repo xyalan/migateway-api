@@ -1,14 +1,14 @@
-package migateway_api
+package migateway
 
 import (
+	"encoding/json"
 	"net"
 	"sync"
-	"encoding/json"
 	"time"
 )
 
 const (
-	MULTICAST_IP = "224.0.0.50"
+	MULTICAST_IP   = "224.0.0.50"
 	MULTICAST_PORT = 4321
 	SERVER_PORT    = 9898
 )

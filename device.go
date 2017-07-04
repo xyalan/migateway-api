@@ -1,10 +1,10 @@
-package migateway_api
+package migateway
 
 import (
 	"encoding/json"
-	"strconv"
-	"reflect"
 	"fmt"
+	"reflect"
+	"strconv"
 	"time"
 )
 

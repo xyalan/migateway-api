@@ -1,4 +1,4 @@
-package migateway_api
+package migateway
 
 const (
 	CMD_IAM         = `iam`

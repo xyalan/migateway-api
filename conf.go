@@ -1,4 +1,4 @@
-package migateway_api
+package migateway
 
 import (
 	"time"
@@ -26,7 +26,7 @@ type Configure struct {
 	ReadRetry            int
 	ReportForwardTimeout int
 
-	AESKey               string
+	AESKey string
 }
 
 func NewConfig() *Configure {
